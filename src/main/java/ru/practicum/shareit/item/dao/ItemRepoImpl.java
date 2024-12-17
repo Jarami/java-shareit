@@ -42,7 +42,7 @@ public class ItemRepoImpl implements ItemRepo {
     public List<Item> search(String substring) {
         return items.values().stream()
                 .filter(item -> {
-                    if (substring.trim().isEmpty()) {
+                    if (substring.trim().isEmpty() || !item.isAvailable()) {
                         return false;
                     }
                     String lowerSubstring = substring.toLowerCase();

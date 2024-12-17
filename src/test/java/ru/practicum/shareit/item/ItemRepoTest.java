@@ -100,6 +100,43 @@ public class ItemRepoTest {
         assertEquals(2, items.size());
     }
 
+    @Test
+    public void givenUnAvailableItem_whenSearch_gotEmptyList() {
+        User owner = createAndSaveUser();
+        Item item1 = createAndSaveItem(owner);
+        Item item2 = createAndSaveItem(owner);
+
+        item1.setAvailable(false);
+        item2.setAvailable(false);
+
+        // у первой вещи будет подходящее имя
+        // у второй вещи будет подходящее описание
+        String string = item1.getName();
+        item1.setName(string.toLowerCase());
+        item2.setDescription(TestUtil.randomString(5) + string +
+                TestUtil.randomString(5));
+
+        String searchString = string.toUpperCase();
+
+        List<Item> items = repo.search(searchString);
+
+        assertEquals(0, items.size());
+    }
+
+    @Test
+    public void givenItem_whenSearchEmptyString_gotEmptyList() {
+        User owner = createAndSaveUser();
+        Item item1 = createAndSaveItem(owner);
+        Item item2 = createAndSaveItem(owner);
+
+        item1.setAvailable(true);
+        item2.setAvailable(true);
+
+        List<Item> items = repo.search("");
+
+        assertEquals(0, items.size());
+    }
+
     private User createAndSaveUser() {
         User user = TestUtil.getUser();
         return userRepo.save(user);

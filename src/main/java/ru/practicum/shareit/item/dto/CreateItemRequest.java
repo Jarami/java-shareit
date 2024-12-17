@@ -9,11 +9,9 @@ import lombok.Setter;
 @Setter
 public class CreateItemRequest {
 
-    @NotNull(message = "Название вещи должно быть задано")
     @NotBlank(message = "Название вещи не должно быть пустым")
     private String name;
 
-    @NotNull(message = "Описание вещи должно быть задано")
     @NotBlank(message = "Описание вещи не должно быть пустым")
     private String description;
 

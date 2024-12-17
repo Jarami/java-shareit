@@ -22,12 +22,7 @@ public class UserService {
     public User createUser(@Valid CreateUserRequest request) {
 
         checkEmail(request.getEmail());
-
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .build();
-
+        User user = UserMapper.mapToUser(request);
         return repo.save(user);
     }
 
@@ -38,18 +33,13 @@ public class UserService {
         String newName = request.getName();
         String newEmail = request.getEmail();
 
+        checkUpdatingEmail(userId, newEmail);
+
         if (newEmail != null) {
-            // проверяем, что с данной почтой не зарегистрирован другой пользователь
-            repo.getByEmail(newEmail)
-                    .ifPresentOrElse(existingUser -> {
-                        if (!existingUser.getId().equals(userId)) {
-                            throw new ConflictException("пользователь с почтой %s уже зарегистрирован", newEmail);
-                        }
-                    },
-                    () -> user.setEmail(newEmail));
+            user.setEmail(newEmail);
         }
 
-        if (newName != null && !newName.equals(user.getName())) {
+        if (newName != null) {
             user.setName(newName);
         }
 
@@ -75,5 +65,15 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new ConflictException("пользователь с почтой %s уже зарегистрирован", email);
         }
+    }
+
+    // проверяем, что с данной почтой не зарегистрирован другой пользователь
+    private void checkUpdatingEmail(long userId, String email) {
+        repo.getByEmail(email)
+            .ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(userId)) {
+                    throw new ConflictException("пользователь с почтой %s уже зарегистрирован", email);
+                }
+            });
     }
 }
