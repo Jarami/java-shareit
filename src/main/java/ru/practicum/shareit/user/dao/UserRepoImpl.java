@@ -1,11 +1,13 @@
 package ru.practicum.shareit.user.dao;
 
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.User;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Repository
 public class UserRepoImpl implements UserRepo {
 
     private final Map<Long, User> users = new HashMap<>();

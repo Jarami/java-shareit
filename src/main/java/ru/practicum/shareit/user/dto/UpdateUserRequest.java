@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import ru.practicum.shareit.validator.NullOrNotEmpty;
 
 @Getter
 @Setter
@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class UpdateUserRequest {
 
-    @NotBlank(message = "Название вещи не должно быть пустым")
+    @NullOrNotEmpty(message = "Имя пользователя не должно быть пустым")
     private String name;
 
     @Email
