@@ -16,7 +16,6 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.isAvailable())
-                .bookCount(item.getBookCount())
                 .build();
     }
 
@@ -26,7 +25,6 @@ public class ItemMapper {
                 .name(request.getName())
                 .description(request.getDescription())
                 .available(request.getAvailable())
-                .bookCount(0)
                 .build();
     }
 }

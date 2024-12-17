@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 @Getter
@@ -16,5 +17,5 @@ public class Item {
     private String name;
     private String description;
     private boolean available;
-    private int bookCount;
+    private ItemRequest request;
 }
