@@ -4,9 +4,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Set;
@@ -17,37 +17,37 @@ import java.util.stream.Collectors;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(NotFoundException e) {
-        return new ErrorResponse("не найдена сущность", e.getMessage());
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+        return new ResponseEntity<>(new ErrorResponse("не найдена сущность", e.getMessage()),
+                HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(ConflictException e) {
-        return new ErrorResponse("конфликт", e.getMessage());
+    public ResponseEntity<ErrorResponse> handleConflict(ConflictException e) {
+        return new ResponseEntity<>(new ErrorResponse("конфликт", e.getMessage()),
+                HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConstrainViolation(ConstraintViolationException e) {
+    public ResponseEntity<ErrorResponse> handleConstrainViolation(ConstraintViolationException e) {
 
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
         String description = violations.stream()
                 .map(cv -> cv == null ? "null" : cv.getPropertyPath() + ": " + cv.getMessage())
                 .collect(Collectors.joining(", "));
 
-        return new ErrorResponse("ошибка валидации", description);
+        return new ResponseEntity<>(new ErrorResponse("ошибка валидации", description),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler()
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
         String description = e.getBindingResult().getFieldErrors().stream()
                 .map(ex -> ex.getField() + ": " + ex.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
-        return new ErrorResponse("ошибка валидации", description);
+        return new ResponseEntity<>(new ErrorResponse("ошибка валидации", description),
+                HttpStatus.BAD_REQUEST);
     }
 }
