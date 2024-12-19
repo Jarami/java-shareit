@@ -22,11 +22,13 @@ public class ItemService {
 
     private final UserService userService;
     private final ItemRepo repo;
+    private final ItemMapper mapper;
 
     public Item createItem(@Valid CreateItemRequest request, long userId) {
 
         User owner = userService.getById(userId);
-        Item item = ItemMapper.mapToItem(request, owner);
+        Item item = mapper.toItem(request);
+        item.setOwner(owner);
         return repo.save(item);
     }
 

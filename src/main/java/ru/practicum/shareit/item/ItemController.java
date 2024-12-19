@@ -16,12 +16,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
 
+    private final ItemMapper mapper;
     private final ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<ItemDto> createItem(@RequestBody CreateItemRequest request, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<ItemDto> createItem(@RequestBody CreateItemRequest request,
+                                              @RequestHeader("X-Sharer-User-Id") Long userId) {
+
         Item item = itemService.createItem(request, userId);
-        return new ResponseEntity<>(ItemMapper.mapToDto(item), HttpStatus.CREATED);
+        return new ResponseEntity<>(mapper.toDto(item), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{itemId}")
@@ -31,32 +34,24 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 
         Item item = itemService.updateItem(request, itemId, userId);
-        return ResponseEntity.ok()
-                .body(ItemMapper.mapToDto(item));
+        return ResponseEntity.ok().body(mapper.toDto(item));
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<ItemDto> getById(@PathVariable Long itemId) {
         Item item = itemService.getById(itemId);
-        return ResponseEntity.ok()
-                .body(ItemMapper.mapToDto(item));
+        return ResponseEntity.ok().body(mapper.toDto(item));
     }
 
     @GetMapping
     public ResponseEntity<List<ItemDto>> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return ResponseEntity.ok()
-                .body(
-                        itemService.getByUserId(userId).stream()
-                            .map(ItemMapper::mapToDto)
-                            .toList());
+        List<Item> items = itemService.getByUserId(userId);
+        return ResponseEntity.ok().body(mapper.toDto(items));
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<ItemDto>> search(@RequestParam("text") String searchString) {
-        return ResponseEntity.ok()
-                .body(
-                        itemService.search(searchString).stream()
-                            .map(ItemMapper::mapToDto)
-                            .toList());
+        List<Item> items = itemService.search(searchString);
+        return ResponseEntity.ok().body(mapper.toDto(items));
     }
 }

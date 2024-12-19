@@ -1,30 +1,19 @@
 package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemMapper {
+import java.util.List;
 
-    public static ItemDto mapToDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.isAvailable())
-                .build();
-    }
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface ItemMapper {
 
-    public static Item mapToItem(CreateItemRequest request, User owner) {
-        return Item.builder()
-                .owner(owner)
-                .name(request.getName())
-                .description(request.getDescription())
-                .available(request.getAvailable())
-                .build();
-    }
+    ItemDto toDto(Item item);
+
+    List<ItemDto> toDto(List<Item> item);
+
+    Item toItem(CreateItemRequest request);
 }
