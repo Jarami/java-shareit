@@ -34,15 +34,13 @@ COMMENT ON COLUMN items.name IS 'Название вещи';
 COMMENT ON COLUMN items.description IS 'Описание вещи';
 COMMENT ON COLUMN items.available IS 'Доступность вещи';
 
-CREATE TYPE BOOK_STATUSES AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED');
-
 CREATE TABLE IF NOT EXISTS bookings (
     id BIGSERIAL PRIMARY KEY,
     book_start TIMESTAMP NOT NULL,
     book_end TIMESTAMP NOT NULL,
     item_id BIGINT NOT NULL,
     booker_id BIGINT NOT NULL,
-    book_status BOOK_STATUSES NOT NULL,
+    book_status VARCHAR NOT NULL,
 
     CONSTRAINT fk_bookings_item_id
         FOREIGN KEY(item_id)

@@ -1,12 +1,18 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.persistence.*;
-import ru.practicum.shareit.item.model.Item;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "bookings")
 public class Booking {
     @Id
@@ -29,5 +35,5 @@ public class Booking {
 
     @Column(name = "book_status")
     @Enumerated(EnumType.STRING)
-    private BookingStatus status;
+    private BookingStatus status = BookingStatus.WAITING;
 }

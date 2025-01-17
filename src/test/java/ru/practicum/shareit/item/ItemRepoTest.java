@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.item.dao.ItemRepo;
 import ru.practicum.shareit.item.dao.ItemRepoImpl;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dao.UserRepo;
 import ru.practicum.shareit.user.dao.UserRepoImpl;
