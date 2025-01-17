@@ -13,4 +13,5 @@ public interface UserRepo {
     Optional<User> getByEmail(String email);
 
     void deleteById(long userId);
+
 }
