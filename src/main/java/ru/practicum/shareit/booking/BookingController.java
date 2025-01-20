@@ -33,4 +33,12 @@ public class BookingController {
         Booking booking = bookingService.approveBooking(bookingId, approved, userId);
         return new ResponseEntity<>(mapper.toDto(booking), HttpStatus.OK);
     }
+
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<BookingDto> getBookingInfo(@PathVariable Long bookingId,
+                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+            Booking booking = bookingService.getBookingByIdAndUser(bookingId, userId);
+            return new ResponseEntity<>(mapper.toDto(booking), HttpStatus.OK);
+    }
 }

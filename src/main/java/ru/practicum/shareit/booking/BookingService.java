@@ -72,6 +72,20 @@ public class BookingService {
         return repo.save(booking);
     }
 
+    public Booking getBookingByIdAndUser(Long bookingId, Long userId) {
+
+        Booking booking = findById(bookingId);
+        User user = userService.getById(userId);
+        User owner = booking.getItem().getOwner();
+        User booker = booking.getBooker();
+
+        if (user.equals(owner) || user.equals(booker)) {
+            return booking;
+        } else {
+            throw new ForbiddenException("запрещено просматривать информацию о бронировании {}", bookingId);
+        }
+    }
+
     private Booking findById(Long bookingId) {
         return repo.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("не найдено бронирование с id = %s", bookingId));
