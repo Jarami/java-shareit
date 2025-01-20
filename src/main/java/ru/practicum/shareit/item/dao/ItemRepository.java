@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    String FIND_BY_OWNER_ID1 = """
+    String FIND_BY_OWNER_ID = """
             SELECT new ru.practicum.shareit.item.Item(item.id,
                                                       item.owner,
                                                       item.name,
@@ -41,7 +41,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             );
             """;
 
-    @Query(value = FIND_BY_OWNER_ID1)
+    @Query(value = FIND_BY_OWNER_ID)
     List<Item> findAllByOwnerWithPastNextBooking(@Param("owner") User owner, @Param("now") LocalDateTime now);
 
     @Query(value = SEARCH_QUERY, nativeQuery = true)

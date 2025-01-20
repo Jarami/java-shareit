@@ -133,6 +133,10 @@ public class BookingService {
         return bookings;
     }
 
+    public boolean existPastApprovedItemBookingByUser(Item item, User user) {
+        return repo.existsByItemAndBookerAndStatus(item, user, BookingStatus.APPROVED);
+    }
+
     private Booking findById(Long bookingId) {
         return repo.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("не найдено бронирование с id = %s", bookingId));

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
@@ -25,6 +26,7 @@ public class ItemService {
     private final UserService userService;
     private final ItemRepository repo;
     private final ItemMapper mapper;
+    private final CommentRepository commentRepository;
 
     public Item createItem(@Valid CreateItemRequest request, long userId) {
 

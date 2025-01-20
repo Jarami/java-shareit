@@ -26,8 +26,9 @@ public class UserService {
         log.info("creating user {}", request);
         checkEmail(request.getEmail());
         User user = mapper.toUser(request);
+        User savedUser = repo.save(user);
         log.info("saving user {}", user);
-        return repo.save(user);
+        return savedUser;
     }
 
     public User updateUser(@Valid UpdateUserRequest request, long userId) {
