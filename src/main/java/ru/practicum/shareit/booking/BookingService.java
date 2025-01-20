@@ -110,6 +110,29 @@ public class BookingService {
         return bookings;
     }
 
+    public List<Booking> getOwnerBookings(String stateValue, Long userId) {
+
+        log.info("getting bookings for owner {} with state {}", userId, stateValue);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        FilterBookingState state = FilterBookingState.valueOf(stateValue);
+        User owner = userService.getById(userId);
+
+        List<Booking> bookings = switch(state) {
+            case ALL -> repo.findAllByOwnerOrderByStartAsc(owner);
+            case CURRENT -> repo.findAllByOwnerAndStartBeforeAndEndAfterOrderByStartAsc(owner, now, now);
+            case PAST -> repo.findAllByOwnerAndEndBeforeOrderByStartAsc(owner, now);
+            case FUTURE -> repo.findAllByOwnerAndStartAfterOrderByStartAsc(owner, now);
+            case WAITING -> repo.findAllByBookerAndStatusOrderByStartAsc(owner, BookingStatus.WAITING);
+            case REJECTED -> repo.findAllByOwnerAndStatusOrderByStartAsc(owner, BookingStatus.REJECTED);
+        };
+
+        log.info("found {} booking(s)", bookings.size());
+
+        return bookings;
+    }
+
     private Booking findById(Long bookingId) {
         return repo.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("не найдено бронирование с id = %s", bookingId));
