@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/bookings")
@@ -40,5 +42,16 @@ public class BookingController {
 
             Booking booking = bookingService.getBookingByIdAndUser(bookingId, userId);
             return new ResponseEntity<>(mapper.toDto(booking), HttpStatus.OK);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<BookingDto>> getCurrentUserBookings(@RequestParam(required = false, defaultValue = "ALL") String stateValue,
+                                                                   @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+        log.info("getting current user {} bookings with state {}", userId, stateValue);
+
+        List<Booking> bookings = bookingService.getCurrentUserBookings(stateValue, userId);
+        return new ResponseEntity<>(mapper.toDto(bookings), HttpStatus.OK);
+
     }
 }
