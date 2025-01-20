@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.exception.BadRequest;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dto.CreateCommentRequest;
@@ -30,13 +31,8 @@ public class CommentService {
         Item item = itemService.getById(itemId);
         User user = userService.getById(userId);
 
-        log.info("item = {}", item);
-        log.info("user = {}", user);
-//        List<Booking> bookings = bookingService.getCurrentUserBookings("ALL", userId);
-//        bookings.forEach(booking -> log.info("booking = {}", booking));
-
         if (!bookingService.existPastApprovedItemBookingByUser(item, user)) {
-            throw new ForbiddenException("запрещено оставлять комментарий для вещи %s пользователем %s",
+            throw new BadRequest("запрещено оставлять комментарий для вещи %s пользователем %s",
                     itemId, userId);
         }
 

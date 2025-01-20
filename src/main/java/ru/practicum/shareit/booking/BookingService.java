@@ -134,7 +134,7 @@ public class BookingService {
     }
 
     public boolean existPastApprovedItemBookingByUser(Item item, User user) {
-        return repo.existsByItemAndBookerAndStatus(item, user, BookingStatus.APPROVED);
+        return repo.existsByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now());
     }
 
     private Booking findById(Long bookingId) {
