@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -27,43 +28,43 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             SELECT b
             FROM Booking as b
             JOIN b.item as i
-            WHERE i.owner = ?1
+            WHERE i.owner = :owner
             ORDER BY start ASC""")
-    List<Booking> findAllByOwnerOrderByStartAsc(User owner);
+    List<Booking> findAllByOwnerOrderByStartAsc(@Param("owner") User owner);
 
     @Query("""
             SELECT b
             FROM Booking as b
             JOIN b.item as i
-            WHERE i.owner = ?1
-            AND b.start < ?2 AND b.end > ?3
+            WHERE i.owner = :owner
+            AND b.start < :now AND b.end > :now
             ORDER BY start ASC""")
-    List<Booking> findAllByOwnerAndStartBeforeAndEndAfterOrderByStartAsc(User owner, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllCurrentByOwnerOrderByStartAsc(@Param("owner") User owner, @Param("now") LocalDateTime now);
 
     @Query("""
             SELECT b
             FROM Booking as b
             JOIN b.item as i
-            WHERE i.owner = ?1
-            AND b.end < ?2
+            WHERE i.owner = :owner
+            AND b.end < :now
             ORDER BY start ASC""")
-    List<Booking> findAllByOwnerAndEndBeforeOrderByStartAsc(User owner, LocalDateTime end);
+    List<Booking> findAllPastByOwnerOrderByStartAsc(@Param("owner") User owner, @Param("now") LocalDateTime now);
 
     @Query("""
             SELECT b
             FROM Booking as b
             JOIN b.item as i
-            WHERE i.owner = ?1
-            AND b.start > ?2
+            WHERE i.owner = :owner
+            AND b.start > :now
             ORDER BY start ASC""")
-    List<Booking> findAllByOwnerAndStartAfterOrderByStartAsc(User owner, LocalDateTime start);
+    List<Booking> findAllByOwnerOrderByStartAsc(@Param("owner") User owner, @Param("now") LocalDateTime now);
 
     @Query("""
             SELECT b
             FROM Booking as b
             JOIN b.item as i
-            WHERE i.owner = ?1
-            AND b.status = ?2
+            WHERE i.owner = :owner
+            AND b.status = :status
             ORDER BY start ASC""")
-    List<Booking> findAllByOwnerAndStatusOrderByStartAsc(User owner, BookingStatus status);
+    List<Booking> findAllByOwnerAndStatusOrderByStartAsc(@Param("owner") User owner, @Param("status") BookingStatus status);
 }
