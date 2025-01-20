@@ -22,9 +22,15 @@ public class BookingController {
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
 
         Booking booking = bookingService.createBooking(request, userId);
-        log.info("booking = {}", booking);
-        BookingDto dto = mapper.toDto(booking);
-        log.info("booking dto = {}", dto);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(mapper.toDto(booking), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{bookingId}")
+    public ResponseEntity<BookingDto> approveBooking(@PathVariable Long bookingId,
+                                                     @RequestParam Boolean approved,
+                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+        Booking booking = bookingService.approveBooking(bookingId, approved, userId);
+        return new ResponseEntity<>(mapper.toDto(booking), HttpStatus.OK);
     }
 }

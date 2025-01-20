@@ -50,4 +50,16 @@ public class ErrorHandler {
         return new ResponseEntity<>(new ErrorResponse("ошибка валидации", description),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenException e) {
+        return new ResponseEntity<>(new ErrorResponse("ошибка доступа", e.getMessage()),
+                HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleForbidden(BadRequest e) {
+        return new ResponseEntity<>(new ErrorResponse("ошибочный запрос", e.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
 }
