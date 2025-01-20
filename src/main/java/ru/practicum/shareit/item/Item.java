@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.shareit.user.User;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -26,4 +28,10 @@ public class Item {
     private String description;
 
     private boolean available;
+
+    @Transient
+    private LocalDateTime lastBooking;
+
+    @Transient
+    private LocalDateTime nextBooking;
 }
