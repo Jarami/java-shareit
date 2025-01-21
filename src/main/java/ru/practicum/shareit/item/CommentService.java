@@ -40,6 +40,8 @@ public class CommentService {
         comment.setItem(item);
         comment.setAuthor(user);
 
+        item.getComments().add(comment);
+
         return commentRepository.save(comment);
     }
 }
