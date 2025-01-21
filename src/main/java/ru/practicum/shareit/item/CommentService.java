@@ -4,17 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.exception.BadRequest;
-import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dto.CreateCommentRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
-
-import java.util.List;
 
 @Slf4j
 @Service

@@ -40,7 +40,7 @@ public class Item {
     @Transient
     private LocalDateTime nextBooking;
 
-    public Item (Long id, User owner, String name, String description, boolean available, List<Comment> comments) {
+    public Item(Long id, User owner, String name, String description, boolean available, List<Comment> comments) {
         this.id = id;
         this.owner = owner;
         this.name = name;
