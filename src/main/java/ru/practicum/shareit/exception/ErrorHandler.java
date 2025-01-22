@@ -58,7 +58,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleForbidden(BadRequest e) {
+    public ResponseEntity<ErrorResponse> handleForbidden(BadRequestException e) {
         return new ResponseEntity<>(new ErrorResponse("ошибочный запрос", e.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }

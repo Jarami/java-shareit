@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
-import ru.practicum.shareit.exception.BadRequest;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
@@ -37,15 +37,15 @@ public class BookingService {
         Item item = itemService.getById(request.getItemId());
 
         if (request.getStart().isAfter(request.getEnd())) {
-            throw new BadRequest("Начало бронирования не должно быть после его окончания");
+            throw new BadRequestException("Начало бронирования не должно быть после его окончания");
         }
 
         if (request.getStart().isEqual(request.getEnd())) {
-            throw new BadRequest("Начало бронирования не должно совпадать с его окончанием");
+            throw new BadRequestException("Начало бронирования не должно совпадать с его окончанием");
         }
 
         if (!item.isAvailable()) {
-            throw new BadRequest("Вещь с id = %s недоступна для бронирования", item.getId());
+            throw new BadRequestException("Вещь с id = %s недоступна для бронирования", item.getId());
         }
 
         Booking booking = mapper.toBooking(request);
