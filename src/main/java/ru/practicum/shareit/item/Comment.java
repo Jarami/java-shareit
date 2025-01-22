@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.actuate.audit.listener.AuditListener;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.practicum.shareit.user.User;
 
 import java.time.Instant;
@@ -13,6 +16,7 @@ import java.time.Instant;
 @Setter
 @ToString
 @Table(name = "comments")
+@EntityListeners(AuditingEntityListener.class)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +33,6 @@ public class Comment {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private Instant created = Instant.now();
+    @CreatedDate
+    private Instant created;
 }
