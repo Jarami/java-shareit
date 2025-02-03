@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dao.UserRepo;
+import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.CreateUserRequest;
 import ru.practicum.shareit.user.dto.UpdateUserRequest;
 
@@ -19,15 +19,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepo repo;
+    private final UserRepository repo;
     private final UserMapper mapper;
 
     public User createUser(@Valid CreateUserRequest request) {
         log.info("creating user {}", request);
         checkEmail(request.getEmail());
         User user = mapper.toUser(request);
+        User savedUser = repo.save(user);
         log.info("saving user {}", user);
-        return repo.save(user);
+        return savedUser;
     }
 
     public User updateUser(@Valid UpdateUserRequest request, long userId) {
@@ -54,12 +55,12 @@ public class UserService {
     }
 
     public User getById(long userId) {
-        return repo.getById(userId)
+        return repo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("не найден пользователь с id = %s", userId));
     }
 
     public User getByEmail(String email) {
-        return repo.getByEmail(email)
+        return repo.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("не найден пользователь с email = %s", email));
     }
 
@@ -68,7 +69,7 @@ public class UserService {
     }
 
     private void checkEmail(String email) {
-        Optional<User> existingUser = repo.getByEmail(email);
+        Optional<User> existingUser = repo.findByEmail(email);
         if (existingUser.isPresent()) {
             throw new ConflictException("пользователь с почтой %s уже зарегистрирован", email);
         }
@@ -76,7 +77,7 @@ public class UserService {
 
     // проверяем, что с данной почтой не зарегистрирован другой пользователь
     private void checkUpdatingEmail(long userId, String email) {
-        repo.getByEmail(email)
+        repo.findByEmail(email)
             .ifPresent(existingUser -> {
                 if (!existingUser.getId().equals(userId)) {
                     throw new ConflictException("пользователь с почтой %s уже зарегистрирован", email);

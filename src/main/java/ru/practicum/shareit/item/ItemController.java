@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CreateItemRequest;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.*;
 
 import java.util.List;
 
@@ -18,6 +15,7 @@ public class ItemController {
 
     private final ItemMapper mapper;
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @PostMapping
     public ResponseEntity<ItemDto> createItem(@RequestBody CreateItemRequest request,
@@ -53,5 +51,14 @@ public class ItemController {
     public ResponseEntity<List<ItemDto>> search(@RequestParam("text") String searchString) {
         List<Item> items = itemService.search(searchString);
         return ResponseEntity.ok().body(mapper.toDto(items));
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentRequest request,
+                                                    @PathVariable Long itemId,
+                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+        Comment comment = commentService.createComment(request, itemId, userId);
+        return new ResponseEntity<>(mapper.toCommentDto(comment), HttpStatus.CREATED);
     }
 }

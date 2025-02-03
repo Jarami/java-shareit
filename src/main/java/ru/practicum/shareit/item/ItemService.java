@@ -2,28 +2,38 @@ package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dao.ItemRepo;
+import ru.practicum.shareit.item.dao.CommentRepository;
+import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
+import ru.practicum.shareit.item.dto.ItemLastNextBookDate;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 @Validated
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemService {
 
     private final UserService userService;
-    private final ItemRepo repo;
+    private final ItemRepository repo;
     private final ItemMapper mapper;
+    private final CommentRepository commentRepository;
 
+    @Transactional
     public Item createItem(@Valid CreateItemRequest request, long userId) {
 
         User owner = userService.getById(userId);
@@ -32,6 +42,7 @@ public class ItemService {
         return repo.save(item);
     }
 
+    @Transactional
     public Item updateItem(@Valid UpdateItemRequest request, long itemId, long userId) {
 
         Item item = getById(itemId);
@@ -61,18 +72,36 @@ public class ItemService {
     }
 
     public Item getById(long itemId) {
-        return repo.getById(itemId)
+        return repo.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("не найдена вещь с id = %s", itemId));
     }
 
     public List<Item> getByUserId(long userId) {
-        return repo.getByUserId(userId);
+        LocalDateTime now = LocalDateTime.now();
+        User owner = userService.getById(userId);
+
+        Map<Long, ItemLastNextBookDate> itemById = groupById(repo.getLastAndNextBookingDate(owner, now));
+
+        List<Item> items = repo.findAllByOwnerWithComments(owner);
+        items.forEach(item -> {
+            if (itemById.get(item.getId()) != null) {
+                ItemLastNextBookDate date = itemById.get(item.getId());
+                item.setLastBooking(date.getLastBooking());
+                item.setNextBooking(date.getNextBooking());
+            }
+        });
+
+        return items;
     }
 
     public List<Item> search(String searchString) {
+        if (searchString == null || searchString.isBlank()) {
+            return List.of();
+        }
         return repo.search(searchString);
     }
 
+    @Transactional
     public void deleteById(long itemId, long userId) {
 
         Item item = getById(itemId);
@@ -84,4 +113,12 @@ public class ItemService {
 
         repo.deleteById(itemId);
     }
+
+    private Map<Long, ItemLastNextBookDate> groupById(List<ItemLastNextBookDate> items) {
+        Map<Long, ItemLastNextBookDate> itemById = new HashMap<>();
+        items.forEach(item -> itemById.put(item.getId(), item));
+        return itemById;
+    }
 }
+
+
