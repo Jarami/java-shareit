@@ -59,13 +59,8 @@ class BookingServiceTest {
 
         @BeforeEach
         void setup() {
-            Mockito
-                    .when(userService.getById(user.getId()))
-                    .thenReturn(user);
-
-            Mockito
-                    .when(itemService.getById(item.getId()))
-                    .thenReturn(item);
+            mockUserById(user);
+            mockItemById(item);
         }
 
         @Test
@@ -103,13 +98,7 @@ class BookingServiceTest {
         @Test
         void givenValidRequest_whenCreate_gotBooking() {
 
-            Mockito
-                .when(bookingRepository.save(Mockito.any(Booking.class)))
-                .thenAnswer(invocation -> {
-                    Booking booking = invocation.getArgument(0, Booking.class);
-                    booking.setId(1L);
-                    return booking;
-                });
+            mockBookingSave();
 
             CreateBookingRequest request = new CreateBookingRequest(item.getId(),
                     LocalDateTime.parse("2025-02-03T00:00:00"),
@@ -147,9 +136,7 @@ class BookingServiceTest {
         @Test
         void givenCurrentUserNotTheOwner_whenApprove_gotForbiddenException() {
 
-            Mockito
-                .when(bookingRepository.findById(savedBooking.getId()))
-                .thenReturn(Optional.of(savedBooking));
+            mockBookingById(savedBooking);
 
             assertThrows(ForbiddenException.class, () ->
                 bookingService.approveBooking(savedBooking.getId(), true, 1000L));
@@ -158,9 +145,7 @@ class BookingServiceTest {
         @Test
         void givenApprovedByValidUser_whenApprove_gotApproved() {
 
-            Mockito
-                    .when(bookingRepository.findById(savedBooking.getId()))
-                    .thenReturn(Optional.of(savedBooking));
+            mockBookingById(savedBooking);
 
             bookingService.approveBooking(savedBooking.getId(), true, owner.getId());
 
@@ -172,9 +157,7 @@ class BookingServiceTest {
         @Test
         void givenRejectedByValidUser_whenApprove_gotApproved() {
 
-            Mockito
-                    .when(bookingRepository.findById(savedBooking.getId()))
-                    .thenReturn(Optional.of(savedBooking));
+            mockBookingById(savedBooking);
 
             bookingService.approveBooking(savedBooking.getId(), false, owner.getId());
 
@@ -189,17 +172,13 @@ class BookingServiceTest {
 
         @BeforeEach
         void setup() {
-            Mockito
-                    .when(bookingRepository.findById(savedBooking.getId()))
-                    .thenReturn(Optional.of(savedBooking));
+            mockBookingById(savedBooking);
         }
 
         @Test
         void givenOwner_whenGet_gotBooking() {
 
-            Mockito
-                    .when(userService.getById(owner.getId()))
-                    .thenReturn(owner);
+            mockUserById(owner);
 
             Booking actualBooking = bookingService.getBookingByIdAndUser(savedBooking.getId(), owner.getId());
 
@@ -209,9 +188,7 @@ class BookingServiceTest {
         @Test
         void givenNotOwner_whenGet_gotForbiddenException() {
 
-            Mockito
-                    .when(userService.getById(user.getId()))
-                    .thenReturn(user);
+            mockUserById(user);
 
             Booking actualBooking = bookingService.getBookingByIdAndUser(savedBooking.getId(), user.getId());
 
@@ -227,10 +204,7 @@ class BookingServiceTest {
 
         @BeforeEach
         void setup() {
-            Mockito
-                    .when(userService.getById(user.getId()))
-                    .thenReturn(user);
-
+            mockUserById(user);
             now = LocalDateTime.now();
         }
 
@@ -313,10 +287,7 @@ class BookingServiceTest {
 
         @BeforeEach
         void setup() {
-            Mockito
-                    .when(userService.getById(owner.getId()))
-                    .thenReturn(owner);
-
+            mockUserById(owner);
             now = LocalDateTime.now();
         }
 
@@ -403,5 +374,33 @@ class BookingServiceTest {
                 .thenReturn(true);
 
         assertTrue(bookingService.existPastApprovedItemBookingByUser(item, user, now));
+    }
+
+    private void mockUserById(User user) {
+        Mockito
+                .when(userService.getById(user.getId()))
+                .thenReturn(user);
+    }
+
+    private void mockItemById(Item item) {
+        Mockito
+                .when(itemService.getById(item.getId()))
+                .thenReturn(item);
+    }
+
+    private void mockBookingById(Booking booking) {
+        Mockito
+                .when(bookingRepository.findById(booking.getId()))
+                .thenReturn(Optional.of(booking));
+    }
+
+    private void mockBookingSave() {
+        Mockito
+                .when(bookingRepository.save(Mockito.any(Booking.class)))
+                .thenAnswer(invocation -> {
+                    Booking booking = invocation.getArgument(0, Booking.class);
+                    booking.setId(1L);
+                    return booking;
+                });
     }
 }

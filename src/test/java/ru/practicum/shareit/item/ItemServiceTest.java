@@ -60,6 +60,9 @@ class ItemServiceTest {
 
         assertEquals(1L, actualItem.getId());
         assertEquals(owner, actualItem.getOwner());
+
+        Mockito.verify(itemRepository, Mockito.times(1))
+                .save(Mockito.any(Item.class));
     }
 
     @Nested
@@ -143,6 +146,11 @@ class ItemServiceTest {
 
         @Test
         void givenAbsentItem_whenGetById_gotNonFoundException() {
+
+            Mockito
+                    .when(itemRepository.findById(item.getId() + 1))
+                    .thenReturn(Optional.empty());
+
             assertThrows(NotFoundException.class, () ->
                     itemService.getById(item.getId() + 1));
         }
@@ -256,19 +264,19 @@ class ItemServiceTest {
         }
     }
 
-    void mockUserById(User user) {
+    private void mockUserById(User user) {
         Mockito
                 .when(userService.getById(user.getId()))
                 .thenReturn(user);
     }
 
-    void mockItemById(Item item) {
+    private void mockItemById(Item item) {
         Mockito
                 .when(itemRepository.findById(item.getId()))
                 .thenReturn(Optional.of(item));
     }
 
-    void mockItemSave() {
+    private void mockItemSave() {
         Mockito
                 .when(itemRepository.save(Mockito.any(Item.class)))
                 .thenAnswer(invocation -> {
@@ -278,7 +286,7 @@ class ItemServiceTest {
                 });
     }
 
-    void mockItemUpdate(Item item) {
+    private void mockItemUpdate(Item item) {
         Mockito
                 .when(itemRepository.save(item))
                 .thenReturn(item);
