@@ -76,8 +76,8 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("не найдена вещь с id = %s", itemId));
     }
 
-    public List<Item> getByUserId(long userId) {
-        LocalDateTime now = LocalDateTime.now();
+    public List<Item> getByUserId(long userId, LocalDateTime now) {
+
         User owner = userService.getById(userId);
 
         Map<Long, ItemLastNextBookDate> itemById = groupById(repo.getLastAndNextBookingDate(owner, now));

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,8 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<List<ItemDto>> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        List<Item> items = itemService.getByUserId(userId);
+        LocalDateTime now = LocalDateTime.now();
+        List<Item> items = itemService.getByUserId(userId, now);
         return ResponseEntity.ok().body(mapper.toDto(items));
     }
 

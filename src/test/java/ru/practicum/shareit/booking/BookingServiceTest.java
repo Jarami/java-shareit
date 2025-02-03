@@ -37,8 +37,6 @@ class BookingServiceTest {
     @Mock
     private BookingRepository bookingRepository;
 
-    private BookingMapper bookingMapper;
-
     private User user;
     private User owner;
     private Item item;
@@ -46,8 +44,7 @@ class BookingServiceTest {
 
     @BeforeEach
     void setup() {
-        bookingMapper = new BookingMapperImpl();
-        bookingService = new BookingService(userService, itemService, bookingRepository, bookingMapper);
+        bookingService = new BookingService(userService, itemService, bookingRepository, new BookingMapperImpl());
 
         user = new User(1L, "user", "user@mail.ru");
         owner = new User(2L, "owner", "owner@mail.ru");
