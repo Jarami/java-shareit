@@ -87,11 +87,9 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getCurrentUserBookings(String stateValue, Long userId) {
+    public List<Booking> getCurrentUserBookings(String stateValue, Long userId, LocalDateTime now) {
 
         log.info("getting bookings for user {} with state {}", userId, stateValue);
-
-        LocalDateTime now = LocalDateTime.now();
 
         FilterBookingState state = FilterBookingState.valueOf(stateValue);
         User user = userService.getById(userId);
@@ -110,11 +108,9 @@ public class BookingService {
         return bookings;
     }
 
-    public List<Booking> getOwnerBookings(String stateValue, Long userId) {
+    public List<Booking> getOwnerBookings(String stateValue, Long userId, LocalDateTime now) {
 
         log.info("getting bookings for owner {} with state {}", userId, stateValue);
-
-        LocalDateTime now = LocalDateTime.now();
 
         FilterBookingState state = FilterBookingState.valueOf(stateValue);
         User owner = userService.getById(userId);
@@ -133,11 +129,11 @@ public class BookingService {
         return bookings;
     }
 
-    public boolean existPastApprovedItemBookingByUser(Item item, User user) {
-        return repo.existsByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now());
+    public boolean existPastApprovedItemBookingByUser(Item item, User user, LocalDateTime now) {
+        return repo.existsByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, now);
     }
 
-    private Booking findById(Long bookingId) {
+    public Booking findById(Long bookingId) {
         return repo.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("не найдено бронирование с id = %s", bookingId));
     }

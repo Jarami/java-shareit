@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -50,7 +51,8 @@ public class BookingController {
 
         log.info("getting current user {} bookings with state {}", userId, state);
 
-        List<Booking> bookings = bookingService.getCurrentUserBookings(state, userId);
+        LocalDateTime now = LocalDateTime.now();
+        List<Booking> bookings = bookingService.getCurrentUserBookings(state, userId, now);
         return new ResponseEntity<>(mapper.toDto(bookings), HttpStatus.OK);
 
     }
@@ -61,7 +63,8 @@ public class BookingController {
 
         log.info("getting owner {} bookings with state {}", userId, state);
 
-        List<Booking> bookings = bookingService.getOwnerBookings(state, userId);
+        LocalDateTime now = LocalDateTime.now();
+        List<Booking> bookings = bookingService.getOwnerBookings(state, userId, now);
         return new ResponseEntity<>(mapper.toDto(bookings), HttpStatus.OK);
     }
 }

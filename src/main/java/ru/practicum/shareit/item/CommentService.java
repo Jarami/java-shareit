@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.dto.CreateCommentRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,9 @@ public class CommentService {
 
         Item item = itemService.getById(itemId);
         User user = userService.getById(userId);
+        LocalDateTime now = LocalDateTime.now();
 
-        if (!bookingService.existPastApprovedItemBookingByUser(item, user)) {
+        if (!bookingService.existPastApprovedItemBookingByUser(item, user, now)) {
             throw new BadRequestException("запрещено оставлять комментарий для вещи %s пользователем %s",
                     itemId, userId);
         }
