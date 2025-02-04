@@ -13,6 +13,8 @@ import java.util.List;
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ItemMapper {
 
+    @Mapping(target = "lastBooking", source = "lastBooking", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
+    @Mapping(target = "nextBooking", source = "nextBooking", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     ItemDto toDto(Item item);
 
     List<ItemDto> toDto(List<Item> item);

@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,6 +16,6 @@ public class ItemDto {
     private String description;
     private boolean available;
     private List<CommentDto> comments;
-    private LocalDateTime lastBooking;
-    private LocalDateTime nextBooking;
+    private String lastBooking;
+    private String nextBooking;
 }

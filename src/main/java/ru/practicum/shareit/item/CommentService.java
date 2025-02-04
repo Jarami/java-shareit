@@ -27,6 +27,8 @@ public class CommentService {
     @Transactional
     public Comment createComment(@Valid CreateCommentRequest request, Long itemId, Long userId, LocalDateTime now) {
 
+        log.info("creating comment = {}", request);
+
         Item item = itemService.getById(itemId);
         User user = userService.getById(userId);
 

@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,11 +48,11 @@ public class BookingController {
 
     @GetMapping()
     public ResponseEntity<List<BookingDto>> getCurrentUserBookings(@RequestParam(required = false, defaultValue = "ALL") String state,
+                                                                   @RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime now,
                                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        log.info("getting current user {} bookings with state {}", userId, state);
+        log.info("getting current user {} bookings with state {} at {}", userId, state, now);
 
-        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingService.getCurrentUserBookings(state, userId, now);
         return new ResponseEntity<>(mapper.toDto(bookings), HttpStatus.OK);
 
@@ -59,11 +60,11 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getOwnerBookings(@RequestParam(required = false, defaultValue = "ALL") String state,
+                                                             @RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime now,
                                                              @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        log.info("getting owner {} bookings with state {}", userId, state);
+        log.info("getting owner {} bookings with state {} at {}", userId, state, now);
 
-        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingService.getOwnerBookings(state, userId, now);
         return new ResponseEntity<>(mapper.toDto(bookings), HttpStatus.OK);
     }
