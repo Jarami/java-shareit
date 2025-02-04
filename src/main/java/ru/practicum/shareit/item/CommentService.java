@@ -25,11 +25,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Comment createComment(@Valid CreateCommentRequest request, Long itemId, Long userId) {
+    public Comment createComment(@Valid CreateCommentRequest request, Long itemId, Long userId, LocalDateTime now) {
 
         Item item = itemService.getById(itemId);
         User user = userService.getById(userId);
-        LocalDateTime now = LocalDateTime.now();
 
         if (!bookingService.existPastApprovedItemBookingByUser(item, user, now)) {
             throw new BadRequestException("запрещено оставлять комментарий для вещи %s пользователем %s",

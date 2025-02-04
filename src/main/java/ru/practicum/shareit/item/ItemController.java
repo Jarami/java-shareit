@@ -60,7 +60,8 @@ public class ItemController {
                                                     @PathVariable Long itemId,
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        Comment comment = commentService.createComment(request, itemId, userId);
+        LocalDateTime now = LocalDateTime.now();
+        Comment comment = commentService.createComment(request, itemId, userId, now);
         return new ResponseEntity<>(mapper.toCommentDto(comment), HttpStatus.CREATED);
     }
 }
