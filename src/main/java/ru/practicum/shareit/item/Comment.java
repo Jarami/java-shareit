@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.practicum.shareit.user.User;
@@ -15,6 +13,8 @@ import java.time.Instant;
 @Setter
 @ToString
 @Table(name = "comments")
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
     @Id

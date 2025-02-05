@@ -24,6 +24,7 @@ public interface ItemMapper {
     Comment toComment(CreateCommentRequest request);
 
     @Mapping(target = "authorName", source = "comment.author.name")
+    @Mapping(target = "created", source = "created", dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ")
     CommentDto toCommentDto(Comment comment);
 
     List<CommentDto> toCommentDto(List<Comment> comments);

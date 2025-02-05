@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import ru.practicum.shareit.item.dto.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -43,8 +46,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        LocalDateTime now = LocalDateTime.now();
+    public ResponseEntity<List<ItemDto>> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                     @RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime now) {
         List<Item> items = itemService.getByUserId(userId, now);
         return ResponseEntity.ok().body(mapper.toDto(items));
     }
@@ -58,9 +61,10 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentRequest request,
                                                     @PathVariable Long itemId,
+                                                    @RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime now,
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        LocalDateTime now = LocalDateTime.now();
+        log.info("creating comment on item {} by {} at {}", itemId, userId, now);
         Comment comment = commentService.createComment(request, itemId, userId, now);
         return new ResponseEntity<>(mapper.toCommentDto(comment), HttpStatus.CREATED);
     }
