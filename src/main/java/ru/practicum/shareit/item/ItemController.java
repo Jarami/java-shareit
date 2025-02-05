@@ -62,7 +62,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentRequest request,
+    public ResponseEntity<CommentDto> createComment(@Valid @RequestBody CreateCommentRequest request,
                                                     @PathVariable Long itemId,
                                                     @RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime now,
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {

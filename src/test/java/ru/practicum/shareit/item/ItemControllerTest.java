@@ -251,26 +251,54 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].comments", equalTo(List.of())));
     }
 
-    @Test
-    void createComment() throws Exception {
+    @Nested
+    class CreateComment {
 
-        CreateCommentRequest request = new CreateCommentRequest("comment");
-        LocalDateTime now = LocalDateTime.parse("2025-01-01T00:00:00");
-        Comment comment = new Comment(1L, "comment", user, item, now.atZone(ZoneId.systemDefault()).toInstant());
+        @Test
+        void givenNoText_whenCreateComment_gotValidationException() throws Exception {
+            CreateCommentRequest request = new CreateCommentRequest(null);
 
-        Mockito
-                .when(commentService.createComment(request, item.getId(), user.getId(), now))
-                .thenReturn(comment);
+            mvc.perform(post("/items/1/comment?now=2025-01-01T00:00:00")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", user.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
 
-        mvc.perform(post("/items/1/comment?now=2025-01-01T00:00:00")
-                        .content(mapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", user.getId()))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", equalTo(comment.getId()), Long.class))
-                .andExpect(jsonPath("$.text", equalTo(request.getText())))
-                .andExpect(jsonPath("$.authorName", equalTo(user.getName())))
-                .andExpect(jsonPath("$.created", equalTo("2024-12-31T21:00:00Z")));
+        @Test
+        void givenEmptyText_whenCreateComment_gotValidationException() throws Exception {
+            CreateCommentRequest request = new CreateCommentRequest("");
+
+            mvc.perform(post("/items/1/comment?now=2025-01-01T00:00:00")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", user.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenValidRequest_whenCreateComment_gotCreated() throws Exception {
+
+            CreateCommentRequest request = new CreateCommentRequest("comment");
+            LocalDateTime now = LocalDateTime.parse("2025-01-01T00:00:00");
+            Comment comment = new Comment(1L, "comment", user, item, now.atZone(ZoneId.systemDefault()).toInstant());
+
+            Mockito
+                    .when(commentService.createComment(request, item.getId(), user.getId(), now))
+                    .thenReturn(comment);
+
+            mvc.perform(post("/items/1/comment?now=2025-01-01T00:00:00")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", user.getId()))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id", equalTo(comment.getId()), Long.class))
+                    .andExpect(jsonPath("$.text", equalTo(request.getText())))
+                    .andExpect(jsonPath("$.authorName", equalTo(user.getName())))
+                    .andExpect(jsonPath("$.created", equalTo("2024-12-31T21:00:00Z")));
+        }
     }
 }

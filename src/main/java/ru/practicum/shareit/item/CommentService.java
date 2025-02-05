@@ -25,7 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Comment createComment(@Valid CreateCommentRequest request, Long itemId, Long userId, LocalDateTime now) {
+    public Comment createComment(CreateCommentRequest request, Long itemId, Long userId, LocalDateTime now) {
 
         log.info("creating comment = {}", request);
 
