@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -20,7 +18,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 public class BookingService {
 
@@ -29,7 +26,7 @@ public class BookingService {
     private final BookingRepository repo;
     private final BookingMapper mapper;
 
-    public Booking createBooking(@Valid CreateBookingRequest request, long userId) {
+    public Booking createBooking(CreateBookingRequest request, long userId) {
 
         log.info("create booking {}", request);
 
