@@ -1,11 +1,9 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.CommentRepository;
@@ -23,7 +21,6 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ItemService {
@@ -34,7 +31,7 @@ public class ItemService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Item createItem(@Valid CreateItemRequest request, long userId) {
+    public Item createItem(CreateItemRequest request, long userId) {
 
         User owner = userService.getById(userId);
         Item item = mapper.toItem(request);
@@ -43,7 +40,7 @@ public class ItemService {
     }
 
     @Transactional
-    public Item updateItem(@Valid UpdateItemRequest request, long itemId, long userId) {
+    public Item updateItem(UpdateItemRequest request, long itemId, long userId) {
 
         Item item = getById(itemId);
         User owner = userService.getById(userId);

@@ -1,10 +1,12 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class ItemController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<ItemDto> createItem(@RequestBody CreateItemRequest request,
+    public ResponseEntity<ItemDto> createItem(@Valid @RequestBody CreateItemRequest request,
                                               @RequestHeader("X-Sharer-User-Id") Long userId) {
 
         Item item = itemService.createItem(request, userId);
@@ -31,7 +34,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<ItemDto> updateItem(
-            @RequestBody UpdateItemRequest request,
+            @Valid @RequestBody UpdateItemRequest request,
             @PathVariable Long itemId,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 

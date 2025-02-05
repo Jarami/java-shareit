@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,63 +55,157 @@ class ItemControllerTest {
         item = new Item(1L, owner, "item", "some item", true, new ArrayList<>());
     }
 
-    @Test
-    void createItem() throws Exception {
-        Mockito
-                .when(itemService.createItem(any(CreateItemRequest.class), any(Long.class)))
-                .thenReturn(item);
+    @Nested
+    class CreateItem {
 
-        CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), item.isAvailable());
+        @Test
+        void givenNoName_whenCreate_gotValidationException() throws Exception {
+            CreateItemRequest request = new CreateItemRequest(null, item.getDescription(), item.isAvailable());
 
-        mvc.perform(post("/items")
-                .content(mapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header("X-Sharer-User-Id", 1))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id", equalTo(1L), Long.class))
-            .andExpect(jsonPath("$.name", equalTo("item")))
-            .andExpect(jsonPath("$.description", equalTo("some item")))
-            .andExpect(jsonPath("$.available", equalTo(true)))
-            .andExpect(jsonPath("$.comments", equalTo(List.of())));
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenEmptyName_whenCreate_gotValidationException() throws Exception {
+            CreateItemRequest request = new CreateItemRequest("", item.getDescription(), item.isAvailable());
+
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenNoDesc_whenCreate_gotValidationException() throws Exception {
+            CreateItemRequest request = new CreateItemRequest(item.getName(), null, item.isAvailable());
+
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenEmptyDesc_whenCreate_gotValidationException() throws Exception {
+            CreateItemRequest request = new CreateItemRequest(item.getName(), "", item.isAvailable());
+
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenNoAvailable_whenCreate_gotValidationException() throws Exception {
+            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), null);
+
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenValidRequest_whenCreate_gotCreated() throws Exception {
+
+            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), item.isAvailable());
+
+            Mockito
+                    .when(itemService.createItem(request, owner.getId()))
+                    .thenReturn(item);
+
+            mvc.perform(post("/items")
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id", equalTo(item.getId()), Long.class))
+                    .andExpect(jsonPath("$.name", equalTo(item.getName())))
+                    .andExpect(jsonPath("$.description", equalTo(item.getDescription())))
+                    .andExpect(jsonPath("$.available", equalTo(item.isAvailable())))
+                    .andExpect(jsonPath("$.comments", equalTo(List.of())));
+        }
     }
 
-    @Test
-    void updateItem() throws Exception {
+    @Nested
+    class UpdateItem {
 
-        UpdateItemRequest request = new UpdateItemRequest("some new item", "some new desc", false);
+        @Test
+        void givenEmptyName_whenUpdate_gotValidationException() throws Exception {
+            UpdateItemRequest request = new UpdateItemRequest("", "some new desc", false);
 
-        Item newItem = new Item(item.getId(), owner, "some new item", "some new desc", false, new ArrayList<>());
+            mvc.perform(patch("/items/" + item.getId())
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
 
-        Mockito
-                .when(itemService.updateItem(any(UpdateItemRequest.class), any(Long.class), any(Long.class)))
-                .thenReturn(newItem);
+        @Test
+        void givenEmptyDesc_whenUpdate_gotValidationException() throws Exception {
 
-        mvc.perform(patch("/items/" + item.getId())
-                        .content(mapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(1L), Long.class))
-                .andExpect(jsonPath("$.name", equalTo("some new item")))
-                .andExpect(jsonPath("$.description", equalTo("some new desc")))
-                .andExpect(jsonPath("$.available", equalTo(false)))
-                .andExpect(jsonPath("$.comments", equalTo(List.of())));
+            UpdateItemRequest request = new UpdateItemRequest("some new item", "", false);
+
+            mvc.perform(patch("/items/" + item.getId())
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void givenValidRequest_whenUpdate_gotUpdated() throws Exception {
+
+            UpdateItemRequest request = new UpdateItemRequest("some new item", "some new desc", false);
+
+            Item newItem = new Item(item.getId(), owner, "some new item", "some new desc", false, new ArrayList<>());
+
+            Mockito
+                    .when(itemService.updateItem(request, newItem.getId(), owner.getId()))
+                    .thenReturn(newItem);
+
+            mvc.perform(patch("/items/" + item.getId())
+                            .content(mapper.writeValueAsString(request))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .header("X-Sharer-User-Id", owner.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", equalTo(item.getId()), Long.class))
+                    .andExpect(jsonPath("$.name", equalTo("some new item")))
+                    .andExpect(jsonPath("$.description", equalTo("some new desc")))
+                    .andExpect(jsonPath("$.available", equalTo(false)))
+                    .andExpect(jsonPath("$.comments", equalTo(List.of())));
+        }
     }
 
     @Test
     void getById() throws Exception {
         Mockito
-                .when(itemService.getById(1L))
+                .when(itemService.getById(item.getId()))
                 .thenReturn(item);
 
         mvc.perform(get("/items/" + item.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", owner.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(1L), Long.class))
+                .andExpect(jsonPath("$.id", equalTo(item.getId()), Long.class))
                 .andExpect(jsonPath("$.name", equalTo(item.getName())))
                 .andExpect(jsonPath("$.description", equalTo(item.getDescription())))
                 .andExpect(jsonPath("$.available", equalTo(item.isAvailable())))
@@ -124,15 +218,15 @@ class ItemControllerTest {
         LocalDateTime now = LocalDateTime.parse("2025-01-01T00:00:00");
 
         Mockito
-                .when(itemService.getByUserId(1L, now))
+                .when(itemService.getByUserId(owner.getId(), now))
                 .thenReturn(List.of(item));
 
         mvc.perform(get("/items?now=2025-01-01T00:00:00")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", owner.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", equalTo(1L), Long.class))
+                .andExpect(jsonPath("$[0].id", equalTo(item.getId()), Long.class))
                 .andExpect(jsonPath("$[0].name", equalTo(item.getName())))
                 .andExpect(jsonPath("$[0].description", equalTo(item.getDescription())))
                 .andExpect(jsonPath("$[0].available", equalTo(item.isAvailable())))
@@ -148,9 +242,9 @@ class ItemControllerTest {
         mvc.perform(get("/items/search?text=abc")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", owner.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", equalTo(1L), Long.class))
+                .andExpect(jsonPath("$[0].id", equalTo(item.getId()), Long.class))
                 .andExpect(jsonPath("$[0].name", equalTo(item.getName())))
                 .andExpect(jsonPath("$[0].description", equalTo(item.getDescription())))
                 .andExpect(jsonPath("$[0].available", equalTo(item.isAvailable())))
@@ -172,7 +266,7 @@ class ItemControllerTest {
                         .content(mapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 2))
+                        .header("X-Sharer-User-Id", user.getId()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", equalTo(comment.getId()), Long.class))
                 .andExpect(jsonPath("$.text", equalTo(request.getText())))
