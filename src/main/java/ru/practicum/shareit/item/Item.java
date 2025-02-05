@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.shareit.itemRequest.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,10 @@ public class Item {
 
     @OneToMany(mappedBy = "item")
     private List<Comment> comments = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private ItemRequest itemRequest;
 
     @Transient
     private LocalDateTime lastBooking;
