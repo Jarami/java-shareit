@@ -1,10 +1,8 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dao.UserRepository;
@@ -15,14 +13,13 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repo;
     private final UserMapper mapper;
 
-    public User createUser(@Valid CreateUserRequest request) {
+    public User createUser(CreateUserRequest request) {
         log.info("creating user {}", request);
         checkEmail(request.getEmail());
         User user = mapper.toUser(request);
@@ -31,7 +28,7 @@ public class UserService {
         return savedUser;
     }
 
-    public User updateUser(@Valid UpdateUserRequest request, long userId) {
+    public User updateUser(UpdateUserRequest request, long userId) {
 
         log.info("updating user {} as {}", userId, request);
 
