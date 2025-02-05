@@ -9,6 +9,7 @@ import ru.practicum.shareit.validator.NullOrNotEmpty;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UpdateUserRequest {
 
     @NullOrNotEmpty(message = "Имя пользователя не должно быть пустым")

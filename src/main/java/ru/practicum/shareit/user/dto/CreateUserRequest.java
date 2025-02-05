@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class CreateUserRequest {
 
     @NotNull(message = "Имя пользователя должно быть задано")
