@@ -18,7 +18,11 @@ public interface ItemRequestMapper {
 
     List<ItemRequestDto> toDto(List<ItemRequest> requests);
 
-    @Mapping(target = "requester", source = "user")
+    @Mapping(source = "request.description", target = "description")
+    @Mapping(source = "user", target = "requester")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "created", ignore = true)
     ItemRequest toItemRequest(CreateItemRequestRequest request, User user);
 
     @Mapping(target = "ownerId", source = "owner.id")

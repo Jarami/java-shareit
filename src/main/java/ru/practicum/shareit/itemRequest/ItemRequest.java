@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "requests")
+@Table(name = "item_requests")
 @EntityListeners(AuditingEntityListener.class)
 public class ItemRequest {
     @Id

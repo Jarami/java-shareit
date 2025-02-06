@@ -14,17 +14,22 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
     @Query("""
             SELECT r
             FROM ItemRequest as r
-            JOIN FETCH r.items
+            LEFT JOIN FETCH r.items
             WHERE r.requester = :requester
             ORDER BY created DESC""")
     List<ItemRequest> findAllByRequesterWithItems(User requester);
 
+    @Query("""
+            SELECT r
+            FROM ItemRequest as r
+            WHERE r.requester <> :requester
+            ORDER BY created DESC""")
     List<ItemRequest> findAllRequesterNotOrderByCreatedDesc(User requester);
 
     @Query("""
             SELECT r
             FROM ItemRequest as r
-            JOIN FETCH r.items
+            LEFT JOIN FETCH r.items
             WHERE r.id = :requestId""")
     Optional<ItemRequest> findByIdWithItems(Long requestId);
 }

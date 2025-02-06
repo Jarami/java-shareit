@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
 DROP TABLE IF EXISTS bookings CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS item_requests CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS items (
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     available BOOLEAN NOT NULL,
+    request_id BIGINT NULL,
 
     CONSTRAINT fk_items_owner_id
         FOREIGN KEY(owner_id)
@@ -84,3 +86,19 @@ COMMENT ON COLUMN comments.author_id IS 'Идентификатор автора
 COMMENT ON COLUMN comments.item_id IS 'Идентификатор комментируемой вещи';
 COMMENT ON COLUMN comments.created IS 'Время создания комментария';
 
+CREATE TABLE IF NOT EXISTS item_requests (
+    id BIGSERIAL PRIMARY KEY,
+    description VARCHAR NOT NULL,
+    requester_id BIGINT NOT NULL,
+    created TIMESTAMP NOT NULL,
+
+    CONSTRAINT fk_item_requests_requester_id
+        FOREIGN KEY(requester_id)
+            REFERENCES users(id)
+                ON DELETE CASCADE
+);
+COMMENT ON TABLE item_requests IS 'Таблица запросов вещей';
+COMMENT ON COLUMN item_requests.id IS 'Идентификатор запроса';
+COMMENT ON COLUMN item_requests.description IS 'Описание запроса';
+COMMENT ON COLUMN item_requests.requester_id IS 'Идентификатор пользователя, создавшего запрос';
+COMMENT ON COLUMN item_requests.created IS 'Время создания запроса';
