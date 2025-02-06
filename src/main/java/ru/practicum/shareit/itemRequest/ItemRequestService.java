@@ -40,9 +40,15 @@ public class ItemRequestService {
         return repo.findAllRequesterNotOrderByCreatedDesc(user);
     }
 
-    public ItemRequest getRequest(Long requestId) {
+    public ItemRequest getByIdWithItems(Long requestId) {
         log.info("getting request {}", requestId);
         return repo.findByIdWithItems(requestId)
                 .orElseThrow(() -> new NotFoundException("не найден запрос с id = %s", requestId));
+    }
+
+    public ItemRequest getById(Long requestId) {
+        return repo.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("не найден запрос с id = %s", requestId));
+
     }
 }

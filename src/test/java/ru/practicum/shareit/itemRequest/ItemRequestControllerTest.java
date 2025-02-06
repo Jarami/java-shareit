@@ -183,7 +183,7 @@ class ItemRequestControllerTest {
         request.getItems().add(item2);
 
         Mockito
-                .when(itemRequestService.getRequest(request.getId()))
+                .when(itemRequestService.getByIdWithItems(request.getId()))
                 .thenReturn(request);
 
         mvc.perform(get("/requests/" + request.getId())

@@ -100,14 +100,14 @@ class ItemRequestServiceTest {
     }
 
     @Test
-    void getRequest() {
+    void getByIdWithItems() {
         ItemRequest req = new ItemRequest(1L, "first request", user, new ArrayList<>(), getCreated("2025-01-01T00:00:00"));
 
         Mockito
                 .when(itemRequestRepository.findByIdWithItems(1L))
                 .thenReturn(Optional.of(req));
 
-        assertEquals(req, itemRequestService.getRequest(1L));
+        assertEquals(req, itemRequestService.getByIdWithItems(1L));
     }
 
     private void mockUserById(User user) {

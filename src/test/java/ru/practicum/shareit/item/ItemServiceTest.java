@@ -14,10 +14,14 @@ import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.ItemLastNextBookDate;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.itemRequest.ItemRequest;
+import ru.practicum.shareit.itemRequest.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,31 +42,57 @@ class ItemServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
+    @Mock
+    private ItemRequestService itemRequestService;
+
     private User user;
     private User owner;
     private Item item;
 
     @BeforeEach
     void setup() {
-        itemService = new ItemService(userService, itemRepository, new ItemMapperImpl(), commentRepository);
+        itemService = new ItemService(userService, itemRepository, new ItemMapperImpl(), commentRepository, itemRequestService);
         user = new User(1L, "user", "user@mail.ru");
         owner = new User(2L, "owner", "owner@mail.ru");
         item = new Item(1L, owner, "item", "some item", true, new ArrayList<>());
     }
 
-    @Test
-    void createItem() {
-        mockUserById(owner);
-        mockItemSave();
+    @Nested
+    class CreateItem {
 
-        CreateItemRequest request = new CreateItemRequest("item", "some item", true);
-        Item actualItem = itemService.createItem(request, owner.getId());
+        @Test
+        void givenCreateRequest_whenCreate_gotCreated() {
+            mockUserById(owner);
+            mockItemSave();
 
-        assertEquals(1L, actualItem.getId());
-        assertEquals(owner, actualItem.getOwner());
+            CreateItemRequest request = new CreateItemRequest("item", "some item", true, null);
+            Item actualItem = itemService.createItem(request, owner.getId());
 
-        Mockito.verify(itemRepository, Mockito.times(1))
-                .save(Mockito.any(Item.class));
+            assertEquals(1L, actualItem.getId());
+            assertEquals(owner, actualItem.getOwner());
+
+            Mockito.verify(itemRepository, Mockito.times(1))
+                    .save(Mockito.any(Item.class));
+        }
+
+        @Test
+        void givenCreateRequestWithRequestId_whenCreate_gotCreatedWithRequest() {
+            mockUserById(owner);
+            mockItemSave();
+
+            ItemRequest itemRequest = new ItemRequest(1L, "some request", user, new ArrayList<>(), getInstant("2025-01-01T00:00:00"));
+            mockRequestById(itemRequest);
+
+            CreateItemRequest request = new CreateItemRequest("item", "some item", true, itemRequest.getId());
+            Item actualItem = itemService.createItem(request, owner.getId());
+
+            assertEquals(1L, actualItem.getId());
+            assertEquals(owner, actualItem.getOwner());
+            assertEquals(itemRequest, actualItem.getItemRequest());
+
+            Mockito.verify(itemRepository, Mockito.times(1))
+                    .save(Mockito.any(Item.class));
+        }
     }
 
     @Nested
@@ -270,6 +300,12 @@ class ItemServiceTest {
                 .thenReturn(user);
     }
 
+    private void mockRequestById(ItemRequest request) {
+        Mockito
+                .when(itemRequestService.getById(request.getId()))
+                .thenReturn(request);
+    }
+
     private void mockItemById(Item item) {
         Mockito
                 .when(itemRepository.findById(item.getId()))
@@ -290,5 +326,9 @@ class ItemServiceTest {
         Mockito
                 .when(itemRepository.save(item))
                 .thenReturn(item);
+    }
+
+    private Instant getInstant(String text) {
+        return LocalDateTime.parse(text).atZone(ZoneId.of("UTC")).toInstant();
     }
 }

@@ -60,7 +60,7 @@ class ItemControllerTest {
 
         @Test
         void givenNoName_whenCreate_gotValidationException() throws Exception {
-            CreateItemRequest request = new CreateItemRequest(null, item.getDescription(), item.isAvailable());
+            CreateItemRequest request = new CreateItemRequest(null, item.getDescription(), item.isAvailable(), null);
 
             mvc.perform(post("/items")
                             .content(mapper.writeValueAsString(request))
@@ -72,7 +72,7 @@ class ItemControllerTest {
 
         @Test
         void givenEmptyName_whenCreate_gotValidationException() throws Exception {
-            CreateItemRequest request = new CreateItemRequest("", item.getDescription(), item.isAvailable());
+            CreateItemRequest request = new CreateItemRequest("", item.getDescription(), item.isAvailable(), null);
 
             mvc.perform(post("/items")
                             .content(mapper.writeValueAsString(request))
@@ -84,7 +84,7 @@ class ItemControllerTest {
 
         @Test
         void givenNoDesc_whenCreate_gotValidationException() throws Exception {
-            CreateItemRequest request = new CreateItemRequest(item.getName(), null, item.isAvailable());
+            CreateItemRequest request = new CreateItemRequest(item.getName(), null, item.isAvailable(), null);
 
             mvc.perform(post("/items")
                             .content(mapper.writeValueAsString(request))
@@ -96,7 +96,7 @@ class ItemControllerTest {
 
         @Test
         void givenEmptyDesc_whenCreate_gotValidationException() throws Exception {
-            CreateItemRequest request = new CreateItemRequest(item.getName(), "", item.isAvailable());
+            CreateItemRequest request = new CreateItemRequest(item.getName(), "", item.isAvailable(), null);
 
             mvc.perform(post("/items")
                             .content(mapper.writeValueAsString(request))
@@ -108,7 +108,7 @@ class ItemControllerTest {
 
         @Test
         void givenNoAvailable_whenCreate_gotValidationException() throws Exception {
-            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), null);
+            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), null, null);
 
             mvc.perform(post("/items")
                             .content(mapper.writeValueAsString(request))
@@ -121,7 +121,7 @@ class ItemControllerTest {
         @Test
         void givenValidRequest_whenCreate_gotCreated() throws Exception {
 
-            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), item.isAvailable());
+            CreateItemRequest request = new CreateItemRequest(item.getName(), item.getDescription(), item.isAvailable(), null);
 
             Mockito
                     .when(itemService.createItem(request, owner.getId()))

@@ -19,4 +19,6 @@ public class CreateItemRequest {
 
     @NotNull(message = "Доступность вещи должна быть задана")
     private Boolean available;
+
+    private Long requestId;
 }

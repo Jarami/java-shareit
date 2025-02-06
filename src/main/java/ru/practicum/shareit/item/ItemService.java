@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CreateItemRequest;
 import ru.practicum.shareit.item.dto.ItemLastNextBookDate;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.itemRequest.ItemRequest;
+import ru.practicum.shareit.itemRequest.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -29,6 +31,7 @@ public class ItemService {
     private final ItemRepository repo;
     private final ItemMapper mapper;
     private final CommentRepository commentRepository;
+    private final ItemRequestService itemRequestService;
 
     @Transactional
     public Item createItem(CreateItemRequest request, long userId) {
@@ -36,6 +39,12 @@ public class ItemService {
         User owner = userService.getById(userId);
         Item item = mapper.toItem(request);
         item.setOwner(owner);
+
+        if (request.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestService.getById(request.getRequestId());
+            item.setItemRequest(itemRequest);
+        }
+
         return repo.save(item);
     }
 
