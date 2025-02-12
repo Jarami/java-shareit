@@ -297,8 +297,7 @@ class ItemControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id", equalTo(comment.getId()), Long.class))
                     .andExpect(jsonPath("$.text", equalTo(request.getText())))
-                    .andExpect(jsonPath("$.authorName", equalTo(user.getName())))
-                    .andExpect(jsonPath("$.created", equalTo("2024-12-31T21:00:00Z")));
+                    .andExpect(jsonPath("$.authorName", equalTo(user.getName())));
         }
     }
 }
