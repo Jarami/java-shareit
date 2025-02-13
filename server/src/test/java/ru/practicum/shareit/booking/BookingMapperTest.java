@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookingMapperTest {
 
-    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private BookingMapper mapper;
 

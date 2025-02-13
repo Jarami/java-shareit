@@ -5,11 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
-import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserMapper;
 
 import java.util.List;
