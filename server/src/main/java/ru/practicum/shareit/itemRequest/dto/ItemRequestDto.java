@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRequestDto {
-    private long id;
+    private Long id;
     private String description;
     private List<ItemDto> items = new ArrayList<>();
     private String created;

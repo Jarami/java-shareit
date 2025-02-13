@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.itemRequest.dto.CreateItemRequestRequest;
 import ru.practicum.shareit.user.User;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -108,6 +110,29 @@ class ItemRequestServiceTest {
                 .thenReturn(Optional.of(req));
 
         assertEquals(req, itemRequestService.getByIdWithItems(1L));
+    }
+
+    @Test
+    void givenNoRequestById_whenGetById_gotNotFoundException() {
+            Mockito
+                    .when(itemRequestRepository.findById(1L))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(NotFoundException.class, () ->
+                    itemRequestService.getById(1L));
+    }
+
+    @Test
+    void givenRequestById_whenGetById_gotIt() {
+
+        ItemRequest request = new ItemRequest(2L, null, null, null, null);
+
+        Mockito
+                .when(itemRequestRepository.findById(2L))
+                .thenReturn(Optional.of(request));
+
+        ItemRequest actualRequest = itemRequestService.getById(2L);
+        assertEquals(2L, actualRequest.getId());
     }
 
     private void mockUserById(User user) {

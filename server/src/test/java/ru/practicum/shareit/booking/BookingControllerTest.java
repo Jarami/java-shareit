@@ -14,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemMapperImpl;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapperImpl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@Import({BookingMapperImpl.class})
+@Import({UserMapperImpl.class, ItemMapperImpl.class, BookingMapperImpl.class})
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
 

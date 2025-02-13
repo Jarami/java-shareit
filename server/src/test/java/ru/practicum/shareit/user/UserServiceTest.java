@@ -159,6 +159,9 @@ class UserServiceTest {
 
     @Test
     void deleteUserById() {
+        userService.deleteUserById(1L);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .deleteById(1L);
     }
 
     void mockUserById(User user) {

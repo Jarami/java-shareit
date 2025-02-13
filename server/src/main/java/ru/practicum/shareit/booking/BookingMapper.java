@@ -6,13 +6,17 @@ import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreateBookingRequest;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.user.UserMapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring",
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+        uses = {ItemMapper.class, UserMapper.class})
 public interface BookingMapper {
 
     @Mapping(target = "start", source = "start", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
@@ -22,8 +26,4 @@ public interface BookingMapper {
     List<BookingDto> toDto(List<Booking> bookings);
 
     Booking toBooking(CreateBookingRequest request);
-
-    ItemDto toItemDto(Item item);
-
-    UserDto toUserDto(User user);
 }

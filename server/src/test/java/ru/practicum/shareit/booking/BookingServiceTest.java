@@ -13,8 +13,10 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemMapperImpl;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapperImpl;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
@@ -44,7 +46,8 @@ class BookingServiceTest {
 
     @BeforeEach
     void setup() {
-        bookingService = new BookingService(userService, itemService, bookingRepository, new BookingMapperImpl());
+        BookingMapper bookingMapper = new BookingMapperImpl(new ItemMapperImpl(), new UserMapperImpl());
+        bookingService = new BookingService(userService, itemService, bookingRepository, bookingMapper);
 
         user = new User(1L, "user", "user@mail.ru");
         owner = new User(2L, "owner", "owner@mail.ru");
@@ -78,7 +81,7 @@ class BookingServiceTest {
 
             CreateBookingRequest request = new CreateBookingRequest(item.getId(),
                     LocalDateTime.parse("2025-02-03T00:00:00"),
-                    LocalDateTime.parse("2024-02-03T00:00:00"));
+                    LocalDateTime.parse("2025-02-03T00:00:00"));
 
             assertThrows(BadRequestException.class, () -> bookingService.createBooking(request, user.getId()));
         }
@@ -186,13 +189,22 @@ class BookingServiceTest {
         }
 
         @Test
-        void givenNotOwner_whenGet_gotForbiddenException() {
+        void givenBooker_whenGet_gotBooking() {
 
             mockUserById(user);
 
             Booking actualBooking = bookingService.getBookingByIdAndUser(savedBooking.getId(), user.getId());
 
             assertEquals(savedBooking.getId(), actualBooking.getId());
+        }
+
+        @Test
+        void givenNeitherOwnerNorBooker_whenGet_gotForbiddenException() {
+            User someUser = new User(3L, "someUser", "someUser@mail.ru");
+            mockUserById(someUser);
+
+            assertThrows(ForbiddenException.class, () ->
+                    bookingService.getBookingByIdAndUser(savedBooking.getId(), someUser.getId()));
         }
     }
 
